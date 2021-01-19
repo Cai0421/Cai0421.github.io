@@ -10,77 +10,72 @@
             <i class="fa fa-quote-right"></i>
           </blockquote>
 <a id="more"></a>
-<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>前段时间，遇见了如下的两个问题</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前段时间，遇见了如下的两个问题</p>
 <ol>
-<li><p>power shell安装oh-my-posh后显示为方块</p>
-</li>
-<li><p>ArcGIS通过csv转换得到的point shapefile的属性信息同地理坐标发生错位</p>
-<p>而最终对于上述两个问题的解决，其问题的本质均指向了编码问题，同样也是在平时编写代码过程中最为重要但同时也即为容易被忽略的问题，下面如何解决上述问题以及就编码这一概念展开解释。</p>
-</li>
+<li>power shell安装oh-my-posh后显示为方块</li>
+<li>ArcGIS通过csv转换得到的point shapefile的属性信息同地理坐标发生错位</li>
 </ol>
-<h2 id="2-编码"><a href="#2-编码" class="headerlink" title="2. 编码"></a>2. 编码</h2><h3 id="2-1-编码本质"><a href="#2-1-编码本质" class="headerlink" title="2.1 编码本质"></a>2.1 编码本质</h3><p>  日常代码过程中遇见的绝大部分的乱码问题都可以归结到编码问题，而编码的本质其实就是对于给计算机的一本<strong>字典</strong>，即编码实现了如下两件事情</p>
+<p>  而最终对于上述两个问题的解决，其问题的本质均指向了编码问题，同样也是在平时编写代码过程中最为重要但同时也即为容易被忽略的问题，下面如何解决上述问题以及就编码这一概念展开解释。</p>
+<h2 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h2><h3 id="编码本质"><a href="#编码本质" class="headerlink" title="编码本质"></a>编码本质</h3><p>  日常代码过程中遇见的绝大部分的乱码问题都可以归结到编码问题，而编码的本质其实就是对于给计算机的一本<strong>字典</strong>，即编码实现了如下两件事情</p>
 <ol>
-<li><p>给所有字符一个独一无二的数字编号，通过mapping的机制进行一一映射，如我将”00000001”映射给”蔡”这一中文字符</p>
-</li>
-<li><p>该数字编号能用0、1表示</p>
-<p>对于2而言，由于编码的长度存在不定长的情况，如’才’映射给”00000010”,而”菜”用”00000001 00000010”，而计算机如何分辨读取到的编码应该映射为“蔡才”还是“菜”便成了问题。（常见的UTF-8编码中的中文常为3-4个字节），而对于第二个问题的解决一般是采用<strong>定长</strong>的策略，即规定多少字节的代表一个字符，对于<strong>未达到长度的字符前面补0</strong>进行解决。</p>
-</li>
+<li>给所有字符一个独一无二的数字编号，通过mapping的机制进行一一映射，如我将”00000001”映射给”蔡”这一中文字符</li>
+<li>该数字编号能用0、1表示</li>
 </ol>
-<h3 id="2-2-乱码的背后机理"><a href="#2-2-乱码的背后机理" class="headerlink" title="2.2 乱码的背后机理"></a>2.2 乱码的背后机理</h3><p>  说起乱码对于大部分人影响最为深刻的应该为C以及C++命令行输出“烫烫烫”或者“屯屯屯”的乱码形式，其输出如下乱码的原因是VS studio部分的编辑器对于未分配的内存空间会默认填入相关的内容。</p>
+<p>  对于2而言，由于编码的长度存在不定长的情况，如’才’映射给”00000010”,而”菜”用”00000001 00000010”，而计算机如何分辨读取到的编码应该映射为“蔡才”还是“菜”便成了问题。（常见的UTF-8编码中的中文常为3-4个字节），而对于第二个问题的解决一般是采用<strong>定长</strong>的策略，即规定多少字节的代表一个字符，对于<strong>未达到长度的字符前面补0</strong>进行解决。</p>
+<h3 id="乱码的背后机理"><a href="#乱码的背后机理" class="headerlink" title="乱码的背后机理"></a>乱码的背后机理</h3><p>  说起乱码对于大部分人影响最为深刻的应该为C以及C++命令行输出“烫烫烫”或者“屯屯屯”的乱码形式，其输出如下乱码的原因是VS studio部分的编辑器对于未分配的内存空间会默认填入相关的内容。</p>
 <ol>
 <li><p>未分配或者静态分配而未赋初值的内存采用0xCC填充</p>
 <figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> C; <span class="comment">// default C = -858993460(0xCCCCCCC)</span></span><br><span class="line">	   <span class="comment">// 烫（0xCCCC）</span></span><br></pre></td></tr></tbody></table></figure></li>
 <li><p>动态分配(new, malloc)而未赋初值的内存采用0xCD填充，其中屯(0xCDCD)</p>
-<p>由上述例子我们可以发现乱码的本质就是<strong>编码解码采用了不同的标准</strong>。</p>
-<p>对于计算机而言计算机只能识别0/1进制数据，这就决定了我们需要实现一下两种过程</p>
 </li>
 </ol>
+<p>  由上述例子我们可以发现乱码的本质就是<strong>编码解码采用了不同的标准</strong>。</p>
+<p>  对于计算机而言计算机只能识别0/1进制数据，这就决定了我们需要实现一下两种过程</p>
 <p><strong>编码</strong>：文字符号 $\to$ 二进制数据</p>
 <p><strong>解码</strong>：二进制数据 $\to$ 文字符号</p>
-<p>如下为将字符串先进行utf-8编码，再利用gbk解码，最终输出的结果即为乱码</p>
+<p>  如下为将字符串先进行utf-8编码，再利用gbk解码，最终输出的结果即为乱码</p>
 <figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">s = <span class="string">"蔡菜菜"</span></span><br><span class="line">s.encode(<span class="string">'utf-8'</span>).decode(<span class="string">'gbk'</span>,errors=<span class="string">'ignore'</span>) <span class="comment">#‘ignore’ 去除非gbk框架内的字符</span></span><br><span class="line"><span class="comment"># output s = '钄¤彍鑿'</span></span><br></pre></td></tr></tbody></table></figure>
-<h3 id="2-3-字体和编码"><a href="#2-3-字体和编码" class="headerlink" title="2.3 字体和编码"></a>2.3 字体和编码</h3><p>  从上面可以得知，不同的编码体系主要实现的内容是<strong>字符编码</strong>同<strong>二进制存储码</strong>之间转换的不同体系的“字典”，而字体库即是对于字符编码的可视化显示过程的字典，所以文字调用的过程可以解释为下列流程</p>
+<h3 id="字体和编码"><a href="#字体和编码" class="headerlink" title="字体和编码"></a>字体和编码</h3><p>  从上面可以得知，不同的编码体系主要实现的内容是<strong>字符编码</strong>同<strong>二进制存储码</strong>之间转换的不同体系的“字典”，而字体库即是对于字符编码的可视化显示过程的字典，所以文字调用的过程可以解释为下列流程</p>
 <ol>
-<li><p>根据计算机提供的二进制数据，在确定的编码体系中（如UTF-8)，转换为目标的<strong>文字编码</strong></p>
-</li>
-<li><p>根据文字编码同程序中设置的文字样式（如Mono)等，提取出字体库中的目标符号进行展示</p>
-<p>所以字体库的主要目的是在于美观。同样的由于不同字体库能表示的文字符号是有限的，对于<strong>不在库中的文字同样是无法显示出正确的符号</strong>，而这部分符号的显示常常会用一些默认的符号（如方块）进行替换。</p>
-</li>
+<li>根据计算机提供的二进制数据，在确定的编码体系中（如UTF-8)，转换为目标的<strong>文字编码</strong></li>
+<li>根据文字编码同程序中设置的文字样式（如Mono)等，提取出字体库中的目标符号进行展示</li>
 </ol>
-<h3 id="2-4-中文编码"><a href="#2-4-中文编码" class="headerlink" title="2.4. 中文编码"></a>2.4. 中文编码</h3><p><img src="https://pic4.zhimg.com/80/v2-0d0285e7b9433eeedf7e705d6e082d13_720w.jpg" alt="img"></p>
-<p>  常见的中文编码兼容性图如上，可见 GB18030 $\to$ GBK $\to$ GB2312 $\to$ ASCII $\leftarrow$ UTF8。UTF8同GB相关的中文字符除了ASCII有一定交集外没有任何的交集。这也是最为常见导致乱码的场景，UTF8同GBK的编解码混用。</p>
-<p>  ASCII编码是最为常见的编码形式，但其能编码的字母和符号仅用128个，其能被大部分的编码体系兼容（除UTF-16，UTF32）</p>
-<h4 id="2-4-1-GB18030-to-GBK-to-GB2312"><a href="#2-4-1-GB18030-to-GBK-to-GB2312" class="headerlink" title="2.4.1 GB18030 $\to$ GBK $\to$ GB2312"></a>2.4.1 GB18030 $\to$ GBK $\to$ GB2312</h4><p>GB即国标，GBK即国标扩展，这三种编码的本质除了字节长度的不同，本质上都是前者对于后者由于汉字数目需要的扩展。</p>
+<p>  所以字体库的主要目的是在于美观。同样的由于不同字体库能表示的文字符号是有限的，对于<strong>不在库中的文字同样是无法显示出正确的符号</strong>，而这部分符号的显示常常会用一些默认的符号（如方块）进行替换。</p>
+<h3 id="中文编码"><a href="#中文编码" class="headerlink" title="中文编码"></a>中文编码</h3><p><img src="https://pic4.zhimg.com/80/v2-0d0285e7b9433eeedf7e705d6e082d13_720w.jpg" alt="img"></p>
+<p>  常见的中文编码兼容性图如上，可见 GB18030 $\to$ GBK $\to$ GB2312 $\to$ ASCII $\leftarrow$ UTF8。UTF8同GB相关的中文字符除了ASCII有一定交集外没有任何的交集。这也是最为常见导致乱码的场景，UTF8同GBK的编解码混用。</p>
+<p>  ASCII编码是最为常见的编码形式，但其能编码的字母和符号仅用128个，其能被大部分的编码体系兼容（除UTF-16，UTF32）</p>
+<h4 id="GB18030-to-GBK-to-GB2312"><a href="#GB18030-to-GBK-to-GB2312" class="headerlink" title="GB18030 $\to$ GBK $\to$ GB2312"></a>GB18030 $\to$ GBK $\to$ GB2312</h4><p>  GB即国标，GBK即国标扩展，这三种编码的本质除了字节长度的不同，本质上都是前者对于后者由于汉字数目需要的扩展。</p>
 <ol>
-<li><p><strong>GB2312</strong></p>
-<p>最先提出的兼容中文字符的编码集，其最先提出是在ASCII的基础上进行扩展，每个字占据了<strong>2bytes</strong>，同时输入法常见的半角全角的概念（全角即英文的字符长度同汉字等宽），而全角同半角的相同英文字符背后的编码是不同的（全角输入导致编辑器无法运行的原因）</p>
-</li>
-<li><p><strong>GBK</strong></p>
-<p>在GB2312的基础上进一步扩展了GB2312的6312个中文字符至20902个，同时添加了中文标点符号部首等等</p>
-</li>
-<li><p><strong>GB18030</strong></p>
-<p>在GBK字符基础上进一步扩展，但是由于2bytes的存储上限仅为65536，所以GB18030每个字节占据了<strong>4bytes</strong>。</p>
-</li>
+<li><strong>GB2312</strong></li>
 </ol>
+<p>  最先提出的兼容中文字符的编码集，其最先提出是在ASCII的基础上进行扩展，每个字占据了<strong>2bytes</strong>，同时输入法常见的半角全角的概念（全角即英文的字符长度同汉字等宽），而全角同半角的相同英文字符背后的编码是不同的（全角输入导致编辑器无法运行的原因）</p>
+<ol start="2">
+<li><strong>GBK</strong></li>
+</ol>
+<p>  在GB2312的基础上进一步扩展了GB2312的6312个中文字符至20902个，同时添加了中文标点符号部首等等</p>
+<ol start="3">
+<li><strong>GB18030</strong></li>
+</ol>
+<p>  在GBK字符基础上进一步扩展，但是由于2bytes的存储上限仅为65536，所以GB18030每个字节占据了<strong>4bytes</strong>。</p>
 <p>具体的字节值域见下图，由于需要兼容ASCII所以第一个8bits的最高位置为0</p>
 <p><img src="https://pic1.zhimg.com/80/v2-905e6e4840050444f64375ffd9dffc48_720w.jpg" alt="img"></p>
 <p>同时需要注意的是上述中文编码均采用了<strong>定长编码的划分方式</strong></p>
-<h4 id="2-4-2-UTF-8"><a href="#2-4-2-UTF-8" class="headerlink" title="2.4.2 UTF-8"></a>2.4.2 UTF-8</h4><p>  我对于UTF-8的初印象是来自于，对于大部分python2不兼容中文一般的解决方法通过在文件首通过设定为UTF-8进行解决。UTF-8编码的出现是为了能解决世界上的大部分文字，也是目前大部分代码过程中会采用的编码形式。其的主要目的便是将<strong>Unicode（字符集）</strong>设定一一映射的<strong>编码规则</strong>。</p>
-<p>  但UTF-8为变长字符编码，这也是导致了其同GB系列的编码除ASCII外的所有均不兼容的主要原因。</p>
-<p>  UTF-8采用了二进制<strong>最高位连续1的个数</strong>来决定该字是几字节编码（如110xxxxx代表的为双字节，同时这也意味着前n+1位是间隔判断字符），如果最高位为0则代表单字节（该举措是为了兼容ASCII编码）。如下图即为汉字字符从Unicode字符集中转换为UTF-8的过程。</p>
+<h4 id="UTF-8"><a href="#UTF-8" class="headerlink" title="UTF-8"></a>UTF-8</h4><p>  我对于UTF-8的初印象是来自于，对于大部分python2不兼容中文一般的解决方法通过在文件首通过设定为UTF-8进行解决。UTF-8编码的出现是为了能解决世界上的大部分文字，也是目前大部分代码过程中会采用的编码形式。其的主要目的便是将<strong>Unicode（字符集）</strong>设定一一映射的<strong>编码规则</strong>。</p>
+<p>  但UTF-8为变长字符编码，这也是导致了其同GB系列的编码除ASCII外的所有均不兼容的主要原因。</p>
+<p>  UTF-8采用了二进制<strong>最高位连续1的个数</strong>来决定该字是几字节编码（如110xxxxx代表的为双字节，同时这也意味着前n+1位是间隔判断字符），如果最高位为0则代表单字节（该举措是为了兼容ASCII编码）。如下图即为汉字字符从Unicode字符集中转换为UTF-8的过程。</p>
 <p><img src="https://pic1.zhimg.com/80/v2-e65b436e01c4df151e496bf2acfab51c_720w.jpg" alt="img"></p>
-<h2 id="3-问题解决"><a href="#3-问题解决" class="headerlink" title="3. 问题解决"></a>3. 问题解决</h2><h3 id="3-1-power-shell-oh-my-posh"><a href="#3-1-power-shell-oh-my-posh" class="headerlink" title="3.1 power shell oh-my-posh"></a>3.1 power shell oh-my-posh</h3><p>oh-my-posh类似于linux系统中的oh-my-zsh主要作用是对于命令行的美化，但对于oh-my-posh设置后往往会出现方块问题（该问题同样在WSL的oh-my-zsh中存在），问题示意如下图。</p>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="power-shell-oh-my-posh"><a href="#power-shell-oh-my-posh" class="headerlink" title="power shell oh-my-posh"></a>power shell oh-my-posh</h3><p>  oh-my-posh类似于linux系统中的oh-my-zsh主要作用是对于命令行的美化，但对于oh-my-posh设置后往往会出现方块问题（该问题同样在WSL的oh-my-zsh中存在），问题示意如下图。</p>
 <p><img src="https://i.loli.net/2021/01/11/VUDqMnbuxjXyJ7i.png"></p>
-<p>由上述可知，出现方块的字符的主要原因是，字体库中不支持该字符编码导致的问题，具体的解决方案如下。</p>
-<p>下载并安装<a href="https://github.com/ryanoasis/nerd-fonts%E5%86%85%E7%9A%84%E5%AD%97%E4%BD%93%E5%B9%B6%E8%BF%9B%E8%A1%8C%E5%AE%89%E8%A3%85%EF%BC%8C%E5%B0%86%E5%86%85%E9%83%A8%E7%9A%84%E5%AD%97%E4%BD%93%E8%AE%BE%E7%BD%AE%E6%9B%B4%E6%8D%A2%E4%B8%BA%E5%AE%89%E8%A3%85%E7%9A%84%E5%AD%97%E4%BD%93%E3%80%82%E7%BB%93%E6%9E%9C%E5%A6%82%E4%B8%8B%E6%89%80%E7%A4%BA%E3%80%82">https://github.com/ryanoasis/nerd-fonts内的字体并进行安装，将内部的字体设置更换为安装的字体。结果如下所示。</a></p>
+<p>  由上述可知，出现方块的字符的主要原因是，字体库中不支持该字符编码导致的问题，具体的解决方案如下。</p>
+<p>  下载并安装<a href="https://github.com/ryanoasis/nerd-fonts%E5%86%85%E7%9A%84%E5%AD%97%E4%BD%93%E5%B9%B6%E8%BF%9B%E8%A1%8C%E5%AE%89%E8%A3%85%EF%BC%8C%E5%B0%86%E5%86%85%E9%83%A8%E7%9A%84%E5%AD%97%E4%BD%93%E8%AE%BE%E7%BD%AE%E6%9B%B4%E6%8D%A2%E4%B8%BA%E5%AE%89%E8%A3%85%E7%9A%84%E5%AD%97%E4%BD%93%E3%80%82%E7%BB%93%E6%9E%9C%E5%A6%82%E4%B8%8B%E6%89%80%E7%A4%BA%E3%80%82">https://github.com/ryanoasis/nerd-fonts内的字体并进行安装，将内部的字体设置更换为安装的字体。结果如下所示。</a></p>
 <p><img src="https://i.loli.net/2021/01/11/nqEsWi17Rdj58Lh.png"></p>
 <p>解决问题的核心在于nerd-fonts提供的字体库能提供相应所需的符号。</p>
-<h3 id="3-2-Arcgis错位问题"><a href="#3-2-Arcgis错位问题" class="headerlink" title="3.2 Arcgis错位问题"></a>3.2 Arcgis错位问题</h3><p>  解决该部分的问题将近用了两天时间，下列主要是对于解决的过程和相关的方法进行总结。</p>
-<h4 id="3-2-1-问题本质"><a href="#3-2-1-问题本质" class="headerlink" title="3.2.1 问题本质"></a>3.2.1 问题本质</h4><p>   该问题的产生同样是因为编码问题导致，而这一问题是我利用python进行逐行写入后编码问题报错，从而意识到了所谓的错位问题本质是在于编码方式导致的直接问题。在对于逐行编码过程中，发现不管是采用<strong>GB</strong>系列亦或者是<strong>UTF-8</strong>均会产生无法编码的字符，这就表明了，原始数据中存在<strong>不同编码方式</strong>的数据，而Arcgis采用统一的编码形式进行编码，也就导致了该问题的发生。</p>
-<p>​    同时需要注意的是，ArcGIS打开dBase文件时，会先对于.CPG文件进行读取，确定编码类型，如果缺失CPG文件，则Arcgis会默认将编码假设为Windows(ANSI/Multi-byte)，这也是导致dbf属性表乱码的原因之一。</p>
-<h4 id="3-2-2-解决思路"><a href="#3-2-2-解决思路" class="headerlink" title="3.2.2 解决思路"></a>3.2.2 解决思路</h4><p>   确定了问题是由于数据中存在不同形式的编码形式，但python的pandas读取数据后均为二进制的存储方式（python的str存储的为二进制码），所以为了解决编码不统一的问题主要采用了下列代码。</p>
+<h3 id="Arcgis错位问题"><a href="#Arcgis错位问题" class="headerlink" title="Arcgis错位问题"></a>Arcgis错位问题</h3><p>  解决该部分的问题将近用了两天时间，下列主要是对于解决的过程和相关的方法进行总结。</p>
+<h4 id="问题本质"><a href="#问题本质" class="headerlink" title="问题本质"></a>问题本质</h4><p>  该问题的产生同样是因为编码问题导致，而这一问题是我利用python进行逐行写入后编码问题报错，从而意识到了所谓的错位问题本质是在于编码方式导致的直接问题。在对于逐行编码过程中，发现不管是采用<strong>GB</strong>系列亦或者是<strong>UTF-8</strong>均会产生无法编码的字符，这就表明了，原始数据中存在<strong>不同编码方式</strong>的数据，而Arcgis采用统一的编码形式进行编码，也就导致了该问题的发生。</p>
+<p>​  同时需要注意的是，ArcGIS打开dBase文件时，会先对于.CPG文件进行读取，确定编码类型，如果缺失CPG文件，则Arcgis会默认将编码假设为Windows(ANSI/Multi-byte)，这也是导致dbf属性表乱码的原因之一。</p>
+<h4 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h4><p>  确定了问题是由于数据中存在不同形式的编码形式，但python的pandas读取数据后均为二进制的存储方式（python的str存储的为二进制码），所以为了解决编码不统一的问题主要采用了下列代码。</p>
 <figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">s = <span class="string">"目标语句"</span></span><br><span class="line">s = s.encode(<span class="string">'utf-8'</span>,errors=<span class="string">'ignore'</span>).decode(<span class="string">'utf-8'</span>)</span><br><span class="line"><span class="comment"># errors ignore剔除了同utf-8无法表示的内容符号，并最后解码成utf-8的方式进行存储</span></span><br></pre></td></tr></tbody></table></figure>
-<h4 id="3-2-2-核心相关代码"><a href="#3-2-2-核心相关代码" class="headerlink" title="3.2.2 核心相关代码"></a>3.2.2 核心相关代码</h4><p>   该部分主要介绍了csv等文件转换为shapefile的两种方式，以下代码均为核心代码。</p>
+<h4 id="核心相关代码"><a href="#核心相关代码" class="headerlink" title="核心相关代码"></a>核心相关代码</h4><p>  该部分主要介绍了csv等文件转换为shapefile的两种方式，以下代码均为核心代码。</p>
 <ol>
 <li><strong>geopandas</strong></li>
 </ol>
@@ -89,7 +84,7 @@
 <li>pyshp</li>
 </ol>
 <figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> shapefile <span class="comment"># pip install pyshp</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_shapefile</span>(<span class="params">shape_path, csv_data</span>):</span></span><br><span class="line">    file = shapefile.Writer(shape_path, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    <span class="comment">#创建字段 C字符 100字符长度， N 双精度 D 日期</span></span><br><span class="line">    colunms_list = csv_data.keys()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>):</span><br><span class="line">        file.field(colunms_list[i],<span class="string">'C'</span>,<span class="string">'100'</span>)</span><br><span class="line">    file.field(colunms_list[<span class="number">3</span>], <span class="string">'D'</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">15</span>):</span><br><span class="line">        file.field(colunms_list[i+<span class="number">4</span>], <span class="string">'C'</span>, <span class="string">'100'</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">        file.field(colunms_list[i+<span class="number">19</span>], <span class="string">'N'</span>, <span class="string">'31'</span>, decimal=<span class="number">4</span>)</span><br><span class="line">    <span class="comment"># 读取csv每行文件进行逐一赋值</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> tqdm(<span class="built_in">range</span>(<span class="built_in">len</span>(csv_data[<span class="string">'企业名称'</span>]))):</span><br><span class="line">        <span class="keyword">if</span> csv_data[<span class="string">'lon'</span>].values[i] == <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="comment"># 添加点矢量</span></span><br><span class="line">        file.point(csv_data[<span class="string">'lon'</span>].values[i], csv_data[<span class="string">'lat'</span>].values[i])</span><br><span class="line">        <span class="comment"># 添加属性表的记录</span></span><br><span class="line">        file.record(<span class="built_in">str</span>(csv_data[<span class="string">'企业名称'</span>].values[i]).encode(<span class="string">'gbk'</span>,errors=<span class="string">'ignore'</span>).decode(<span class="string">'gbk'</span>).encode(<span class="string">'utf-8'</span>).decode(<span class="string">'utf-8'</span>), </span><br><span class="line">                  <span class="comment">#省略不细写</span></span><br><span class="line">                   csv_data[<span class="string">'lon'</span>].values[i],</span><br><span class="line">                   csv_data[<span class="string">'lat'</span>].values[i])</span><br><span class="line">            </span><br><span class="line">    file.close()</span><br><span class="line">    <span class="comment"># 定义投影</span></span><br><span class="line">    proj = osr.SpatialReference() </span><br><span class="line">    proj.ImportFromEPSG(<span class="number">4326</span>) <span class="comment"># 4326-GCS_WGS_1984; 4490- GCS_China_Geodetic_Coordinate_System_2000</span></span><br><span class="line">    wkt = proj.ExportToWkt()</span><br><span class="line">    <span class="comment"># 写入投影</span></span><br><span class="line">    f = <span class="built_in">open</span>(shape_path.replace(<span class="string">".shp"</span>, <span class="string">".prj"</span>), <span class="string">'w'</span>) </span><br><span class="line">    f.write(wkt)<span class="comment">#写入投影信息</span></span><br><span class="line">    f.close()<span class="comment">#关闭操作流</span></span><br></pre></td></tr></tbody></table></figure>
-<h2 id="4-参考资料"><a href="#4-参考资料" class="headerlink" title="4. 参考资料"></a>4. 参考资料</h2><p><a href="https://zhuanlan.zhihu.com/p/46216008">https://zhuanlan.zhihu.com/p/46216008</a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://zhuanlan.zhihu.com/p/46216008">https://zhuanlan.zhihu.com/p/46216008</a></p>
 <p><a href="https://github.com/ryanoasis/nerd-fonts">https://github.com/ryanoasis/nerd-fonts</a></p>
 <p><a href="https://blog.csdn.net/weixin_38333199/article/details/101761810">https://blog.csdn.net/weixin_38333199/article/details/101761810</a></p>
 ]]></content>
@@ -103,6 +98,123 @@
       </tags>
   </entry>
   <entry>
+    <title>空间数据分析</title>
+    <url>/2021/01/19/%E7%A9%BA%E9%97%B4%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<blockquote class="blockquote-center">
+            <i class="fa fa-quote-left"></i>
+            <p>简单来说，就是一次作业</p>
+
+            <i class="fa fa-quote-right"></i>
+          </blockquote>
+<a id="more"></a>
+<p>  本文主要是对于武汉二环内的出租车路段对之间的转移流量的数据进行分析，并基于数据分析的相关结果利用相关的预测模型进行路段转移流的预测，并对不同模型的结果进行对比。</p>
+<h2 id="问题定义"><a href="#问题定义" class="headerlink" title="问题定义"></a>问题定义</h2><p>  本文研究的路段对转移流量即，相邻路段之间的目标出租车的转移流量过程，如下面示意图所示。</p>
+<p><img src="https://i.loli.net/2021/01/19/4eDzVSOI6FcBZ2o.jpg" alt="问题示意"></p>
+<p>  如上图所示，A路段的邻接路段为B，C，D，即研究其的转移路段为为A-B，A-C，A-D（注：本文仅考虑地理空间一阶相邻的路段对流量）。</p>
+<p><strong>相关变量定义</strong></p>
+<p>  $G = (V,E)$：表示整体的路网结构，其中$V = {v_1,v_2,…v_n}$代表图中的节点，具体到现实即为路段。$E$表示节点之间的边缘流，其中定义$e_{ij} \in E$而$e_{ij}$为节点$v_i \to v_j$的边。</p>
+<p>  由于本文仅仅考虑相邻的路段对，所以对于$E$集合中的非邻接对的数值固定为0，所以可将问题重新简化为。</p>
+<p>  定义：$E_t = {e^t_1, e^t_2,…,e^t_n}$，其中$e_i^t$表示为在$t$时刻的第$i$条边的流量值。</p>
+<p>  预测目标：$E_t = f(E_{t-1},E_{t-2},…,E{t-n})$，即通过$t-1,t-2,…t-n$的数据预测得到$t$时刻的数据。</p>
+<h2 id="实验数据"><a href="#实验数据" class="headerlink" title="实验数据"></a>实验数据</h2><h3 id="数据说明"><a href="#数据说明" class="headerlink" title="数据说明"></a>数据说明</h3><p>  本次研究武汉二环路网结构如下述所示，共计4136条路段。</p>
+<p><img src="https://i.loli.net/2021/01/19/auNxlqYiAwknrKF.png"></p>
+<p>  本文实验采用的数据为武汉市2017.07.03-2017.07.30共计四个星期的轨迹数据，数据示意如下图所示，每天约有600个轨迹点数据。</p>
+<p><img src="https://i.loli.net/2021/01/19/3MOHvexrQGtDKZz.png"></p>
+<p>  其中TaxiID为出租车编号，Date数据时间，streetMID为匹配的路段。</p>
+<h3 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h3><h4 id="空间数据处理"><a href="#空间数据处理" class="headerlink" title="空间数据处理"></a>空间数据处理</h4><p>  该部分主要是对于目标路网的空间数据处理，其主要目的根据路网的数据提取出路网中相邻路段邻接对，主要采用了arcgis的网络分析功能，提取出邻接道路，存储结构如下。</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Src_MID_Street</th>
+<th>Dst_MID_Street</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1008</td>
+<td>1065</td>
+</tr>
+</tbody></table>
+<p>  其中Src_MID_Street为路段对的起始路段，Dst_MID_Street为路段对的目标路段，处理得到共计18734对路段对。</p>
+<h4 id="轨迹数据处理"><a href="#轨迹数据处理" class="headerlink" title="轨迹数据处理"></a>轨迹数据处理</h4><p>  该部分主要是针对于将轨迹数据转换为路段对流量的数据处理过程，以下为处理过程中需要注意的内容部分。</p>
+<ol>
+<li>路段转移流的定义，当同一辆出租车(Taxi ID)在研究的时间间隔内发生了(streetMID)的变化时候，该路段对的转移流量增加一。</li>
+<li>实际场景考虑，出租车可能会发生$A \to B \to C$的过程，但实际记录点仅存在$A,C$两点，此时需要引入最短路径算法，本文采用了的为Dijkstra算法，求取$path = Dijkstra(i,j)$通过$path$进行转移流量的计算。</li>
+</ol>
+<p>具体的算法过程如下</p>
+<p><img src="https://i.loli.net/2021/01/19/5GnMkr7uCZje6AU.png"></p>
+<h2 id="数据相关分析"><a href="#数据相关分析" class="headerlink" title="数据相关分析"></a>数据相关分析</h2><p>  本文对于上述得到的数据主要分为两个部分进行分析，一部分为时间序列上的数据的分析，一部分为空间上的数据的分析。</p>
+<h3 id="时间序列分析"><a href="#时间序列分析" class="headerlink" title="时间序列分析"></a>时间序列分析</h3><p><strong>周期性分析</strong></p>
+<p>  周期性分析主要是对于单一路段对的时间序列的分析，以及总体流量的数据分析，结果如下所示。（其中流量的时间聚合粒度设置为10分钟）</p>
+<p><img src="https://i.loli.net/2021/01/19/93KUaTch6ItpZJD.png" alt="download"></p>
+<p>  上图为其中一路段对07-03—07-16的流量波动情况，可见没有明显的周期性，但整体数值偏低。</p>
+<p><img src="https://i.loli.net/2021/01/19/TKB5iHhYREgOecd.png" alt="周期性"></p>
+<p>  上图为其中一路段对07-03—07-16的流量波动情况，可以明显看出其呈现出以天为单位的周期性特征。</p>
+<p><img src="https://i.loli.net/2021/01/19/swOHIQfTKAXPBRa.png" alt="流量总和"></p>
+<p>  上图为总体流量的流量波动可视图，可见其也呈现出明显的以天为单位的波动情况，且高值点出现的时间点为凌晨0-1点以及早上的9-10点范围。</p>
+<p>  综上所述，研究范围内的路段对流量，当该路段对较为活跃（即任意时段都有较高的流量）时，呈现出明显的周期性特征。而消极路段对则没有上述特征。但就整体而言，仍然呈现出明显的周期性特征，对于采用相关的时间序列预测有一定的支撑性。</p>
+<p><strong>时间序列自相关</strong></p>
+<p>  时间序列自相关（autocorrelation or lagged correlation）用于评估时间序列数据是否依赖于其过去的数据。</p>
+<p>  本文对于总流量时间序列进行了自相关序列，lag为10分钟，且使用了2016个lag进行计算。</p>
+<p><img src="https://i.loli.net/2021/01/19/JgPk7jXlwR61Zma.png" alt="自相关系数"></p>
+<p>  见图可知目标点之间的相关性程度可知分别为current(即lag 10minutes)，day(即lag 1440 minutes)，hour(即lag 60minutes)三种序列情况，该点也是支撑下述模型对比中是否采用三种时间间隔序列权重融合的方式可以获取更高的精确度。</p>
+<h3 id="空间相关性分析"><a href="#空间相关性分析" class="headerlink" title="空间相关性分析"></a>空间相关性分析</h3><p>  根据地理学第一定律而言，距离越近的地理事物相关性越高，此处主要是对于该种观点的验证，相邻的路段对之间是否仍然会存在空间上的相关性。</p>
+<p>  主要采取的方法为计算空间自相关性，（空间相关性即证明，数据是否同空间分布相关）此处引进了局部莫兰指数进行评估。</p>
+<p><strong>局部Moran‘s I</strong><br>$$<br>I_i = \frac{Z_i}{S^2}\sum^n_{j \neq i} w_{ij}Z_j<br>$$<br>其中，$Z_i = y_i - \bar{y}, Z_j = y_j - \bar{y}, S^2 = \frac{1}{n}\sum(y_i - \bar{y})^2$</p>
+<p>  其中根据计算得到的结果可以分为以下四个区域。</p>
+<img src="https://i.loli.net/2021/01/19/h3iFTwqMvjVKQHY.png" alt="image-20201218215402792" style="zoom:67%;">
+
+<p>  本文对流量对进行了局部莫兰指数计算（属性为流量），结果如下述所示。</p>
+<img src="https://i.loli.net/2021/01/19/aYUlyzwAv3GWu8x.png" alt="image-20201227174107337" style="zoom:80%;">
+
+<p>  上图中，红色代表高度正相关，蓝色代表负相关，灰色为无明显相关关系。（该图的转移对采用的为路段中点相连的方式，该图会在后文中采用D3方式的可视化进行改进）</p>
+<p><img src="https://i.loli.net/2021/01/19/vLGDfhmXPZdOWi2.png" alt="image-20201227174418845"></p>
+<p>如上图所示，$R^2 = 0.56$具有较为明显的正相关关系。</p>
+<p>  由上述内容可知，路段对在空间中也存在的明显的相关性，该点也是后续中引入ST-ResNet对比的前置条件。</p>
+<h2 id="模型对比"><a href="#模型对比" class="headerlink" title="模型对比"></a>模型对比</h2><p>  为了验证上述根据数据分析得到的相关内容，本文通过对于下述三个模型：GRU模型、Multi-GRU模型，ST-ResNet模型进行预测结果的对比，并对于最后的结果进行可视化分析。</p>
+<h3 id="对比模型说明"><a href="#对比模型说明" class="headerlink" title="对比模型说明"></a>对比模型说明</h3><p><strong>GRU模型</strong>：传统的深度学习时间序列模型，模型结构如下图所示</p>
+<img src="https://img-blog.csdnimg.cn/20200102180123857.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2plc3NleXVsZQ==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" style="zoom:67%;">
+
+<p>  本文仅选取目标时间点$t$之前的${t-T,t-T + 1,…,t-1}$对结果进行预测。</p>
+<p><strong>Multi-GRU模型</strong>： 多时间序列模型融合的GRU模型</p>
+<p>  模型的基本单元同上述的GRU模型一致，不同的是采用了多个时间序列的预测后进行加权融合的过程。</p>
+<p>Current Sequence： ${t- T, t-T+1, …,t-1}$</p>
+<p>Hour Sequence：${t-hour_T, t-hour_{t-1},…,t-hour_1}$<br>Day Sequence：${t-day_T, t-day_{t-1},…,t-day_1}$</p>
+<p>  最后预测的结果表示为：$P’ = w_1P’_{current} + w_2P’_{hour} + w_3P’_{day}$</p>
+<p><strong>ST-ResNet模型</strong>：结合空间信息的深度残差模型</p>
+<p><img src="https://github.com/snehasinghania/STResNet/raw/master/assets/st-resnet.png" alt="img"></p>
+<p>  该模型为 <a href="https://arxiv.org/abs/1610.00081">“Deep Spatio-Temporal Residual Networks for Citywide Crowd Flows Prediction”</a>. 一文中提出的空间残差模型，其能较好地捕获空间信息同时间信息。</p>
+<h3 id="对比模型结果"><a href="#对比模型结果" class="headerlink" title="对比模型结果"></a>对比模型结果</h3><p>本次实验采用的对比指标为$MSE$<br>$$<br>MSE = \sum^n_{j=1}(\hat{y_j} - y_j)^2<br>$$<br><img src="https://i.loli.net/2021/01/19/uCVwc1tU6AHbl7D.png" alt="image-20210119205810357"></p>
+<p>如上图所示，可以支撑先前对于数据分析的结论</p>
+<ol>
+<li>引进多序列的方式能提高模型的预测精度</li>
+<li>对于空间信息的引入同样能提高对于模型的预测精度</li>
+</ol>
+<h3 id="结果可视化"><a href="#结果可视化" class="headerlink" title="结果可视化"></a>结果可视化</h3><p>  传统的采用上图的可视化的实际效果一般，所以本文采用了D3框架对于转移流进行了进一步的可视化操作。</p>
+<p><strong>主要实现的思路：</strong></p>
+<p>1.获取道路上的目标的比例点(0.7)</p>
+<p>2.根据转移流的关系，将比例点通过曲线(贝塞尔曲线)连接</p>
+<p>3.对于不同的属性划分不同的等级，赋予不同的颜色以及线段的粗细</p>
+<p><img src="https://i.loli.net/2021/01/19/AcjqHLxJyohY5te.png" alt="image-20210119205817988"></p>
+<p>上图为真实流量的结果可视化图</p>
+<p><img src="https://i.loli.net/2021/01/19/kRE4ynuZxG8HJch.png" alt="image-20210119205825139"></p>
+<p>上图为预测流量的结果可视化图</p>
+<p><img src="https://i.loli.net/2021/01/19/MrXA9Jgl3v2Gkwm.png" alt="image-20210119205832862"></p>
+<p>上图为预测同目标之间的误差的结果可视化图</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>  本文旨在对于武汉路段对转移流量的数据分析以及可视化，同时结合分析的相关结果利用三种模型进行比对，很好的支撑了文章中数据分析得出的相关的结论即多时间序列以及空间信息对于预测的模型起到了一定的作用。同时在最后利用了D3这一可视化框架，对于结果进行了可视化展望。</p>
+<p>  但本文中对于空间信息的提取仅停留在最为初级的地步，如何更好的利用上述的空间信息更好的促进预测，是之后进一步研究的工作重点。</p>
+]]></content>
+      <categories>
+        <category>数据分析</category>
+      </categories>
+      <tags>
+        <tag>空间数据</tag>
+        <tag>预测</tag>
+        <tag>交通</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>阿加莎的推理王国</title>
     <url>/2021/01/13/%E9%98%BF%E5%8A%A0%E8%8E%8E%E7%9A%84%E6%8E%A8%E7%90%86%E7%8E%8B%E5%9B%BD/</url>
     <content><![CDATA[<blockquote class="blockquote-center">
@@ -112,10 +224,10 @@
             <i class="fa fa-quote-right"></i>
           </blockquote>
 <a id="more"></a>
-<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h2><p>  阿婆的推理成就在此我不多赘述，“侦探女王”四个字的分量足以体现一切。也许阿婆的推理小说以今天的眼光来看是重诡计设计而轻人物设计的，其大部分小说的人物更像是为诡计所服务的“工具人”。除此之外，阿婆的部分小说是具有较为明显的同质性，以我的角度进行叙述便是“移动式的密室案件”——虽然大部分的案件都是发生了场景的变换，但是究其根本，人物都是在阿婆精心构建的一个小世界内发生的案件，这也导致了同质化的发生（此点在ABC谋杀案中尤为明显）。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>  阿婆的推理成就在此我不多赘述，“侦探女王”四个字的分量足以体现一切。也许阿婆的推理小说以今天的眼光来看是重诡计设计而轻人物设计的，其大部分小说的人物更像是为诡计所服务的“工具人”。除此之外，阿婆的部分小说是具有较为明显的同质性，以我的角度进行叙述便是“移动式的密室案件”——虽然大部分的案件都是发生了场景的变换，但是究其根本，人物都是在阿婆精心构建的一个小世界内发生的案件，这也导致了同质化的发生（此点在ABC谋杀案中尤为明显）。</p>
 <p>​  欲扬先抑，虽然列举了种种阿婆推理小说的问题，但一切都不能跳脱时代背景来说，对于那个推理小说刚以一种文学形式进入世界后，阿婆无疑称得上是和柯南道尔并列的双子星。即使脱离时代来看，对于初次接触推理小说的读者来说，阿婆的推理小说也是一块极佳的敲门砖。不仅仅是体现于在小说中掺杂的独属于阿婆女性的那一份细腻，也体现于阿婆所开创的属于推理小说经典的诡计设计。</p>
-<h2 id="2-书籍及介绍"><a href="#2-书籍及介绍" class="headerlink" title="2. 书籍及介绍"></a>2. 书籍及介绍</h2><p>​  以下为我个人对于阿婆推理小说的推荐，仅仅阐述推荐的级别及理由，但不对剧情进行介绍（推理的乐趣在于对后续剧情强烈的好奇心）★☆</p>
-<h3 id="2-1-《东方快车谋杀案》"><a href="#2-1-《东方快车谋杀案》" class="headerlink" title="2.1 《东方快车谋杀案》"></a>2.1 《东方快车谋杀案》</h3><blockquote class="blockquote-center">
+<h2 id="书籍及介绍"><a href="#书籍及介绍" class="headerlink" title="书籍及介绍"></a>书籍及介绍</h2><p>​  以下为我个人对于阿婆推理小说的推荐，仅仅阐述推荐的级别及理由，但不对剧情进行介绍（推理的乐趣在于对后续剧情强烈的好奇心）★☆</p>
+<h3 id="《东方快车谋杀案》"><a href="#《东方快车谋杀案》" class="headerlink" title="《东方快车谋杀案》"></a>《东方快车谋杀案》</h3><blockquote class="blockquote-center">
             <i class="fa fa-quote-left"></i>
             <p>不可能的事不可能已经发生，因此不可能的事尽管看起来不可能，但肯定有可能发生。</p>
 
@@ -125,7 +237,7 @@
 <p>推荐指数：★★★★★</p>
 <p>​  东方快车谋杀案无疑是阿婆推理小说的首选，不断的被电影化也足见其的优秀。不仅仅是对于整个诡计的设计，同样你能感受到波洛作为“人”这一形象的丰满，不再是常见的更偏向于“神”的侦探形象，这一案件引起的是对于犯罪这一本身是否善恶的思考，从而表达出波洛仅仅是更聪明的“人”，而不是洞穿一切的“神”。</p>
 <p>  吐槽一句：东方快车谋杀案的犯罪形式是目前剧本杀的一大创作方式，但大部分的剧本杀仅仅流于这个诡计手法的表面，却没有指向其中的内核，东方快车谋杀案中的犯人是因为“爱”而彼此包庇的，而侦探同样是因为“爱”而选择了放弃真相（真相近乎是侦探的生命）</p>
-<h3 id="2-2-《罗杰疑案》"><a href="#2-2-《罗杰疑案》" class="headerlink" title="2.2 《罗杰疑案》"></a>2.2 《罗杰疑案》</h3><blockquote class="blockquote-center">
+<h3 id="《罗杰疑案》"><a href="#《罗杰疑案》" class="headerlink" title="《罗杰疑案》"></a>《罗杰疑案》</h3><blockquote class="blockquote-center">
             <i class="fa fa-quote-left"></i>
             <p>习惯会束缚人的手脚。我们努力工作只为了那么一个目标，如愿以偿之后，却又开始怀念日复一日的劳碌生活。</p>
 
@@ -134,7 +246,7 @@
 
 <p>推荐指数：★★★★★</p>
 <p>  叙述者诡计开创先河者，这一句话已经奠定了这本小说的地位。不幸的，由于《冰菓》的缘故提前了解到这一手法，导致四分之三的阅读已经得出了凶手是谁这一结论，导致后续的阅读体验有所下降。但对于未接触过叙述者诡计这一手法的读者，在我看来，罗杰疑案是阿婆推理技法的巅峰，是一本能给读者带来推理小说中逐渐抽丝剥茧的推理乐趣。</p>
-<h3 id="2-3-《三幕悲剧》"><a href="#2-3-《三幕悲剧》" class="headerlink" title="2.3 《三幕悲剧》"></a>2.3 《三幕悲剧》</h3><blockquote class="blockquote-center">
+<h3 id="《三幕悲剧》"><a href="#《三幕悲剧》" class="headerlink" title="《三幕悲剧》"></a>《三幕悲剧》</h3><blockquote class="blockquote-center">
             <i class="fa fa-quote-left"></i>
             <p>一个把自己戏剧化的男人，有时会被看错。别人不会认真对待他的真心。</p>
 
@@ -143,7 +255,7 @@
 
 <p>推荐指数：★★★☆</p>
 <p>  One，Two，Three，阿婆设计的极具戏剧表达张力的一场演出，前面的悲剧是为了最后一幕高潮悲剧的提前预演，整部诡计的设计可以说是从一定程度上参照了戏剧。能让身为读者的我，成为坐在舞台前的一位观众，欣赏的是舞台上的三幕悲剧，但问题还是出现于那一句“重诡计而轻人物”，除了波洛这位常驻侦探外没有任何能立于我心中的角色。</p>
-<h3 id="2-4-《死亡约会》"><a href="#2-4-《死亡约会》" class="headerlink" title="2.4 《死亡约会》"></a>2.4 《死亡约会》</h3><blockquote class="blockquote-center">
+<h3 id="《死亡约会》"><a href="#《死亡约会》" class="headerlink" title="《死亡约会》"></a>《死亡约会》</h3><blockquote class="blockquote-center">
             <i class="fa fa-quote-left"></i>
             <p>有时候我们妥协，是害怕争吵。争吵是让人很不舒服的事情。但是我想，行动的自由是值得我们为之奋斗的东西。</p>
 
@@ -152,7 +264,7 @@
 
 <p>推荐指数：★★★★</p>
 <p>​  戏剧质感，这是我对于阿婆大部分书的第一观感。死亡约会的诡计设计优秀程度同三幕悲剧可以说是不相上下的，而多出来的半星，是阿婆在这本书中的体现出来的人文主义关怀以及角色塑造要优于三幕悲剧。虽然书名是具有悲剧色彩的，但是结尾却显得足够温馨，也见阿婆对于爱情这一美好事物的追求。只是对于美好的追求已经开始呈现出对于诡计叙述的压倒导致结尾的观感有些许遗憾。</p>
-<h3 id="2-5-《闪光的氰化物》"><a href="#2-5-《闪光的氰化物》" class="headerlink" title="2.5 《闪光的氰化物》"></a>2.5 《闪光的氰化物》</h3><blockquote class="blockquote-center">
+<h3 id="《闪光的氰化物》"><a href="#《闪光的氰化物》" class="headerlink" title="《闪光的氰化物》"></a>《闪光的氰化物》</h3><blockquote class="blockquote-center">
             <i class="fa fa-quote-left"></i>
             <p>Rosemary is to help people recall. </p>
 
@@ -161,7 +273,7 @@
 
 <p>推荐指数：★★★☆</p>
 <p>​  闪光的氰化物，可以称得上是阿婆对于错综复杂的人物关系的一次很大胆的尝试，不同于其余书的隐藏人物关系，这本书将这种隐藏在人物背后的关系进一步打乱、打结，引向了更加进一步的复杂，并且诡计的设计完全是基于这一人物关系上，诡计本身并不复杂，但通过这一人物关系将原本简单的诡计引向了一种混沌的状态，如同被猫玩后的毛线球，无法找到真正的线头是在何处。但存在的问题同三幕悲剧一样，极强的写作技巧和诡计设计但是及其微弱的人物存在。</p>
-<h3 id="2-6-《ABC谋杀案》"><a href="#2-6-《ABC谋杀案》" class="headerlink" title="2.6 《ABC谋杀案》"></a>2.6 《ABC谋杀案》</h3><blockquote class="blockquote-center">
+<h3 id="《ABC谋杀案》"><a href="#《ABC谋杀案》" class="headerlink" title="《ABC谋杀案》"></a>《ABC谋杀案》</h3><blockquote class="blockquote-center">
             <i class="fa fa-quote-left"></i>
             <p>可是经常被称作是直觉的事物，其实是一种以逻辑推理结论或经验为基础的印象。 </p>
 
@@ -169,7 +281,7 @@
           </blockquote>
 
 <p>推荐指数：★★☆<br>  ABC谋杀案说得上是阿婆在大众出镜率较高的一本书（点名冰菓），但如果要推荐的话，我仅仅推荐给刚开始接触阿婆小说的读者，对于已经读过阿婆较多作品的人来说这一本会让人产生直接的审美疲劳。虽然是全国各地发生的凶杀案件，也是极为经典的预言式杀人（比如非自然死亡就是借鉴了这一诡计的设计），但本质上逃脱不了我开头说的移动式密室，而这一点在这显示的更为严重，场景的更换，但是不更换的是参与这一案件的人员，换句话说将受害人、侦探、凶手放进一个密室，然后按照顺序逐一发生凶杀案，营造出来的效果同这也相差无几，唯一区别的是场景更大后能营造出一种“史诗感”。但对我而言，读到这本书后面让我产生了少见的“告诉我真相，我不想和波洛一起破案了”的对于推理小说来说的消极情绪。</p>
-<h3 id="2-7-《尼罗河上的惨案》"><a href="#2-7-《尼罗河上的惨案》" class="headerlink" title="2.7 《尼罗河上的惨案》"></a>2.7 《尼罗河上的惨案》</h3><blockquote class="blockquote-center">
+<h3 id="《尼罗河上的惨案》"><a href="#《尼罗河上的惨案》" class="headerlink" title="《尼罗河上的惨案》"></a>《尼罗河上的惨案》</h3><blockquote class="blockquote-center">
             <i class="fa fa-quote-left"></i>
             <p>人生空幻。 一点爱情， 一点仇恨， 还有互道早安。 人生短暂。 一点希望， 一点梦想， 还有互道晚安。</p>
 
@@ -178,7 +290,7 @@
 
 <p>推荐指数：★★★★☆</p>
 <p>​  “尼罗河上的惨案值得四星半”，我如是说到。原因在于这本书在死亡约会中我提及的人物塑造更近一步，即使到现在我也能回忆起书中塑造的人物形象是如何的，而不仅仅是因为诡计的精妙让我记住了这些角色，是因为这些角色的本身让我记住了这些角色。<br>  回到诡计，也是阿婆小说中天花板级别的设计，华丽的不在场证据的设计——不仅仅是因为诡计需要设计如此的不在场证明，在这不在场证明的背后是存在感情上的逻辑链条。可以说比起早先的一些作品的重诡计来说，阿婆开始向着人这一本身的塑造改变（这一点在之后的长夜中进入了我所认为的巅峰），阿婆追求的可能不仅仅是死亡约会中的美好，而是对于悲剧进一步的思考。对于我而言读完后最大的问题在于，男主为什么要留下那个所谓的“佐罗印记”，当然答案是不言而喻的。</p>
-<h3 id="2-8-《无人生还》"><a href="#2-8-《无人生还》" class="headerlink" title="2.8 《无人生还》"></a>2.8 《无人生还》</h3><blockquote class="blockquote-center">
+<h3 id="《无人生还》"><a href="#《无人生还》" class="headerlink" title="《无人生还》"></a>《无人生还》</h3><blockquote class="blockquote-center">
             <i class="fa fa-quote-left"></i>
             <p>十个小兵人，外出去吃饭。一个被呛死，还剩九个人。九个小兵人，熬夜熬得深。一个睡过头，还剩八个人。八个小兵人，动身去德文。一个要留下，还剩七个人……</p>
 
@@ -187,7 +299,7 @@
 
 <p>推荐指数：★★★★★</p>
 <p>​  无人生还是阿婆目前深受英国本土喜爱的作品之一，戏剧电影的改编不计其数。之所以放在此处讲，是因为这一本是脱离了波洛探案集的推理小说，同样也是阿婆作品中绕不过的一部作品，作为压轴刚好合适。无人生还的诡计展现形式接近于ABC谋杀案的形式，同样是预告式杀人，但是不同的是无人生还更加富有戏剧性，甚至可以称上是阿婆所有作品中的戏剧演出的巅峰。<br>  十个人一个小岛，一首英国的古老童谣，每个人背后的故事、罪恶，在一场场死亡中被赎罪，不难相信为什么这部作品成为了戏剧电影改编的常客。一座孤岛上的死亡镰刀，一群人接受的审判，从头到尾一出好戏。</p>
-<h3 id="2-9-《长夜》"><a href="#2-9-《长夜》" class="headerlink" title="2.9 《长夜》"></a>2.9 《长夜》</h3><p>推荐指数：★★★★★</p>
+<h3 id="《长夜》"><a href="#《长夜》" class="headerlink" title="《长夜》"></a>《长夜》</h3><p>推荐指数：★★★★★</p>
 <p>​  之所以将长夜放在这个位置，仅仅是长夜是我最爱的阿婆的作品之一，同上述几本书不同，是阿婆很少见的未着重于诡计设计的作品，而是完完全全通过了人物性格的塑造去推动剧情的发生，单纯的就诡计而言可以说是不出彩的，但是就整本书而言这样的诡计是恰到好处的。如同在20世纪50年代在日本出现的社会派推理，长夜这一本书完全可以归于那一派别。</p>
 <p>​  长夜这一故事的构思上可以窥见许多作品的影子，手法是借鉴《罗杰疑案》的叙述者诡计，富家女同落魄男子的恋爱，也在阿婆的小说中频繁出现如《尼罗河上的惨案》，更确切地说这甚至是看房人之谜的扩展。但往更遥远的历史回溯，甚至同爱伦坡笔下的《泄密的心》《黑猫》等的剧情走向颇为相似，本质上来说，阿婆在晚年时间更加深切的去剖析了人性，写出了一场颇让人悲伤的戏剧。虽然阅读这本书已过了许久，但让人难忘的艾丽在那个阳光的午后，在梦想的别墅中弹奏的那曲歌谣</p>
 <blockquote class="blockquote-center">
