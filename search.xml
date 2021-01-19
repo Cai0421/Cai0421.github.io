@@ -147,7 +147,7 @@
 <h2 id="数据相关分析"><a href="#数据相关分析" class="headerlink" title="数据相关分析"></a>数据相关分析</h2><p>  本文对于上述得到的数据主要分为两个部分进行分析，一部分为时间序列上的数据的分析，一部分为空间上的数据的分析。</p>
 <h3 id="时间序列分析"><a href="#时间序列分析" class="headerlink" title="时间序列分析"></a>时间序列分析</h3><p><strong>周期性分析</strong></p>
 <p>  周期性分析主要是对于单一路段对的时间序列的分析，以及总体流量的数据分析，结果如下所示。（其中流量的时间聚合粒度设置为10分钟）</p>
-<p><img src="https://i.loli.net/2021/01/19/93KUaTch6ItpZJD.png" alt="download"></p>
+<p><img src="https://i.loli.net/2021/01/19/93KUaTch6ItpZJD.png" alt="离散性"></p>
 <p>  上图为其中一路段对07-03—07-16的流量波动情况，可见没有明显的周期性，但整体数值偏低。</p>
 <p><img src="https://i.loli.net/2021/01/19/TKB5iHhYREgOecd.png" alt="周期性"></p>
 <p>  上图为其中一路段对07-03—07-16的流量波动情况，可以明显看出其呈现出以天为单位的周期性特征。</p>
@@ -163,18 +163,18 @@
 <p>  主要采取的方法为计算空间自相关性，（空间相关性即证明，数据是否同空间分布相关）此处引进了局部莫兰指数进行评估。</p>
 <p><strong>局部Moran‘s I</strong><br>$$<br>I_i = \frac{Z_i}{S^2}\sum^n_{j \neq i} w_{ij}Z_j<br>$$<br>其中，$Z_i = y_i - \bar{y}, Z_j = y_j - \bar{y}, S^2 = \frac{1}{n}\sum(y_i - \bar{y})^2$</p>
 <p>  其中根据计算得到的结果可以分为以下四个区域。</p>
-<img src="https://i.loli.net/2021/01/19/h3iFTwqMvjVKQHY.png" alt="image-20201218215402792" style="zoom:67%;">
+<img src="https://i.loli.net/2021/01/19/h3iFTwqMvjVKQHY.png" alt="局部莫兰指数示意" style="zoom:67%;">
 
 <p>  本文对流量对进行了局部莫兰指数计算（属性为流量），结果如下述所示。</p>
-<img src="https://i.loli.net/2021/01/19/aYUlyzwAv3GWu8x.png" alt="image-20201227174107337" style="zoom:80%;">
+<img src="https://i.loli.net/2021/01/19/aYUlyzwAv3GWu8x.png" alt="局部莫兰空间图" style="zoom:80%;">
 
 <p>  上图中，红色代表高度正相关，蓝色代表负相关，灰色为无明显相关关系。（该图的转移对采用的为路段中点相连的方式，该图会在后文中采用D3方式的可视化进行改进）</p>
-<p><img src="https://i.loli.net/2021/01/19/vLGDfhmXPZdOWi2.png" alt="image-20201227174418845"></p>
+<p><img src="https://i.loli.net/2021/01/19/vLGDfhmXPZdOWi2.png" alt="局部莫兰结果图"></p>
 <p>如上图所示，$R^2 = 0.56$具有较为明显的正相关关系。</p>
 <p>  由上述内容可知，路段对在空间中也存在的明显的相关性，该点也是后续中引入ST-ResNet对比的前置条件。</p>
 <h2 id="模型对比"><a href="#模型对比" class="headerlink" title="模型对比"></a>模型对比</h2><p>  为了验证上述根据数据分析得到的相关内容，本文通过对于下述三个模型：GRU模型、Multi-GRU模型，ST-ResNet模型进行预测结果的对比，并对于最后的结果进行可视化分析。</p>
 <h3 id="对比模型说明"><a href="#对比模型说明" class="headerlink" title="对比模型说明"></a>对比模型说明</h3><p><strong>GRU模型</strong>：传统的深度学习时间序列模型，模型结构如下图所示</p>
-<img src="https://img-blog.csdnimg.cn/20200102180123857.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2plc3NleXVsZQ==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" style="zoom:67%;">
+<img src="https://img-blog.csdnimg.cn/20200102180123857.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2plc3NleXVsZQ==,size_16,color_FFFFFF,t_70#pic_center" alt="GRU" style="zoom:67%;">
 
 <p>  本文仅选取目标时间点$t$之前的${t-T,t-T + 1,…,t-1}$对结果进行预测。</p>
 <p><strong>Multi-GRU模型</strong>： 多时间序列模型融合的GRU模型</p>
@@ -183,9 +183,9 @@
 <p>Hour Sequence：${t-hour_T, t-hour_{t-1},…,t-hour_1}$<br>Day Sequence：${t-day_T, t-day_{t-1},…,t-day_1}$</p>
 <p>  最后预测的结果表示为：$P’ = w_1P’_{current} + w_2P’_{hour} + w_3P’_{day}$</p>
 <p><strong>ST-ResNet模型</strong>：结合空间信息的深度残差模型</p>
-<p><img src="https://github.com/snehasinghania/STResNet/raw/master/assets/st-resnet.png" alt="img"></p>
+<p><img src="https://github.com/snehasinghania/STResNet/raw/master/assets/st-resnet.png" alt="ST-ResNet"></p>
 <p>  该模型为 <a href="https://arxiv.org/abs/1610.00081">“Deep Spatio-Temporal Residual Networks for Citywide Crowd Flows Prediction”</a>. 一文中提出的空间残差模型，其能较好地捕获空间信息同时间信息。</p>
-<h3 id="对比模型结果"><a href="#对比模型结果" class="headerlink" title="对比模型结果"></a>对比模型结果</h3><p>本次实验采用的对比指标为$MSE$<br>$$<br>MSE = \sum^n_{j=1}(\hat{y_j} - y_j)^2<br>$$<br><img src="https://i.loli.net/2021/01/19/uCVwc1tU6AHbl7D.png" alt="image-20210119205810357"></p>
+<h3 id="对比模型结果"><a href="#对比模型结果" class="headerlink" title="对比模型结果"></a>对比模型结果</h3><p>本次实验采用的对比指标为$MSE$<br>$$<br>MSE = \sum^n_{j=1}(\hat{y_j} - y_j)^2<br>$$<br><img src="https://i.loli.net/2021/01/19/uCVwc1tU6AHbl7D.png" alt="对比图"></p>
 <p>如上图所示，可以支撑先前对于数据分析的结论</p>
 <ol>
 <li>引进多序列的方式能提高模型的预测精度</li>
@@ -196,11 +196,11 @@
 <p>1.获取道路上的目标的比例点(0.7)</p>
 <p>2.根据转移流的关系，将比例点通过曲线(贝塞尔曲线)连接</p>
 <p>3.对于不同的属性划分不同的等级，赋予不同的颜色以及线段的粗细</p>
-<p><img src="https://i.loli.net/2021/01/19/AcjqHLxJyohY5te.png" alt="image-20210119205817988"></p>
+<p><img src="https://i.loli.net/2021/01/19/AcjqHLxJyohY5te.png" alt="真实流量图"></p>
 <p>上图为真实流量的结果可视化图</p>
-<p><img src="https://i.loli.net/2021/01/19/kRE4ynuZxG8HJch.png" alt="image-20210119205825139"></p>
+<p><img src="https://i.loli.net/2021/01/19/kRE4ynuZxG8HJch.png" alt="预测结果图"></p>
 <p>上图为预测流量的结果可视化图</p>
-<p><img src="https://i.loli.net/2021/01/19/MrXA9Jgl3v2Gkwm.png" alt="image-20210119205832862"></p>
+<p><img src="https://i.loli.net/2021/01/19/MrXA9Jgl3v2Gkwm.png" alt="误差图"></p>
 <p>上图为预测同目标之间的误差的结果可视化图</p>
 <h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>  本文旨在对于武汉路段对转移流量的数据分析以及可视化，同时结合分析的相关结果利用三种模型进行比对，很好的支撑了文章中数据分析得出的相关的结论即多时间序列以及空间信息对于预测的模型起到了一定的作用。同时在最后利用了D3这一可视化框架，对于结果进行了可视化展望。</p>
 <p>  但本文中对于空间信息的提取仅停留在最为初级的地步，如何更好的利用上述的空间信息更好的促进预测，是之后进一步研究的工作重点。</p>
