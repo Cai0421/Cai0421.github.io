@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-01-19T13:19:23.965Z</updated>
+  <updated>2021-03-11T13:04:56.034Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -17,11 +17,37 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>烟火</title>
+    <link href="http://example.com/2021/03/11/%E7%83%9F%E7%81%AB/"/>
+    <id>http://example.com/2021/03/11/%E7%83%9F%E7%81%AB/</id>
+    <published>2021-03-11T12:58:21.445Z</published>
+    <updated>2021-03-11T13:04:56.034Z</updated>
+    
+    
+    <summary type="html">&lt;blockquote class=&quot;blockquote-center&quot;&gt;
+            &lt;i class=&quot;fa fa-quote-left&quot;&gt;&lt;/i&gt;
+            &lt;p&gt;烟火&lt;/p&gt;
+
+            &lt;i class=&quot;fa fa-quote-right&quot;&gt;&lt;/i&gt;
+          &lt;/blockquote&gt;</summary>
+    
+    
+    
+    <category term="游戏" scheme="http://example.com/categories/%E6%B8%B8%E6%88%8F/"/>
+    
+    
+    <category term="笔记" scheme="http://example.com/tags/%E7%AC%94%E8%AE%B0/"/>
+    
+    <category term="恐怖游戏" scheme="http://example.com/tags/%E6%81%90%E6%80%96%E6%B8%B8%E6%88%8F/"/>
+    
+  </entry>
+  
+  <entry>
     <title>空间数据分析</title>
     <link href="http://example.com/2021/01/19/%E7%A9%BA%E9%97%B4%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/"/>
     <id>http://example.com/2021/01/19/%E7%A9%BA%E9%97%B4%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/</id>
     <published>2021-01-19T13:03:51.328Z</published>
-    <updated>2021-01-19T13:19:23.965Z</updated>
+    <updated>2021-01-19T13:21:41.246Z</updated>
     
     
     <summary type="html">&lt;blockquote class=&quot;blockquote-center&quot;&gt;
