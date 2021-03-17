@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-03-17T13:47:38.376Z</updated>
+  <updated>2021-03-17T13:56:37.949Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>GNN交通领域论文汇总</title>
+    <link href="http://example.com/2021/03/17/T-GCN/"/>
+    <id>http://example.com/2021/03/17/T-GCN/</id>
+    <published>2021-03-17T13:54:26.010Z</published>
+    <updated>2021-03-17T13:56:37.949Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h1 id=&quot;GCN-A-Temporal-Graph-ConvolutionalNetwork-for-Traffic-Prediction&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="论文" scheme="http://example.com/categories/%E8%AE%BA%E6%96%87/"/>
+    
+    
+    <category term="论文笔记" scheme="http://example.com/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/"/>
+    
+    <category term="深度学习" scheme="http://example.com/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+    
+    <category term="交通预测" scheme="http://example.com/tags/%E4%BA%A4%E9%80%9A%E9%A2%84%E6%B5%8B/"/>
+    
+  </entry>
   
   <entry>
     <title>T-CONV</title>
