@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-03-12T03:57:01.831Z</updated>
+  <updated>2021-03-17T13:47:38.376Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>T-CONV</title>
+    <link href="http://example.com/2021/03/17/T-CONV/"/>
+    <id>http://example.com/2021/03/17/T-CONV/</id>
+    <published>2021-03-17T13:46:34.996Z</published>
+    <updated>2021-03-17T13:47:38.376Z</updated>
+    
+    
+    <summary type="html">&lt;blockquote class=&quot;blockquote-center&quot;&gt;
+            &lt;i class=&quot;fa fa-quote-left&quot;&gt;&lt;/i&gt;
+            &lt;p&gt;T-CONV&lt;/p&gt;
+
+            &lt;i class=&quot;fa fa-quote-right&quot;&gt;&lt;/i&gt;
+          &lt;/blockquote&gt;</summary>
+    
+    
+    
+    <category term="论文" scheme="http://example.com/categories/%E8%AE%BA%E6%96%87/"/>
+    
+    
+    <category term="论文笔记" scheme="http://example.com/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/"/>
+    
+    <category term="深度学习" scheme="http://example.com/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+    
+    <category term="目的点预测" scheme="http://example.com/tags/%E7%9B%AE%E7%9A%84%E7%82%B9%E9%A2%84%E6%B5%8B/"/>
+    
+  </entry>
   
   <entry>
     <title>烟火</title>
